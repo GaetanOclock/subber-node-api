@@ -1,0 +1,14 @@
+marks_out, 0N Original, 11 Slot
+Slot: id,start,duration
+matches, 11 Sub, 0N Slot
+:
+
+Original: id,name, file
+contains, 0N Sub, 11 Video
+Sub: id,text
+writes, 0N User, 11 Sub
+
+is_based, 11 Video, 0N Original
+Video: id,name
+creates, 0N User, 11 Video
+User: id,email, displayName, password
