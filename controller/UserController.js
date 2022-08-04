@@ -1,5 +1,6 @@
 const User = require('../model/User');
 const Video = require('../model/Video');
+const userService = require('../utils/userService');
 
 const updateOrCreate = async req => {
     let user = null;
@@ -22,6 +23,19 @@ module.exports = {
     show: async (req, res) => {
         const user = await User.findByPk(req.params.id);
         res.send(user);
+    },
+    signIn: async (req, res) => {
+        const connectionMethod = req.body.connectionMethod;
+
+        if (connectionMethod === 'google') {
+            const userToken = req.body.token;
+            const data = await userService.extractGoogleTokenData(userToken);
+            console.log(data);
+        }
+
+        res.send({
+            loggedIn: "dontknow"
+        });
     },
     listVideos: async (req, res) => {
         const videos = await Video.findAll({where: {user_id: req.params.id}});
