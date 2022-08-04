@@ -29,8 +29,14 @@ module.exports = {
 
         if (connectionMethod === 'google') {
             const userToken = req.body.token;
-            const data = await userService.extractGoogleTokenData(userToken);
-            console.log(data);
+            try {
+                res.send(await userService.makeGoogleAuth(userToken));
+            } catch(err) {
+                res.status(401);
+                res.send({
+                    message: err.message
+                });
+            }
         }
 
         res.send({
