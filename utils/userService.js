@@ -9,7 +9,6 @@ const googleClient = new OAuth2Client(config.GOOGLE_CLIENT_ID);
 const userService = {
     async makeGoogleAuth(token) {
         const userData = await this.extractGoogleTokenData(token);
-console.log(userData);
 
         if (await this.userExists(userData.email)) {
             const user = await User.findOne({where: {email: userData.email}});
@@ -53,6 +52,22 @@ console.log(userData);
         const payload = ticket.getPayload();
         
         return payload;
+    },
+    validateToken: () => {
+        const authHeader = req.headers.authorization;
+    
+        if (authHeader) {
+            const token = authHeader.replace('Bearer: ', '');
+            jwt.verify(token, config.accessTokenSecret, (err, user) => {
+                if (err) {
+                    console.log(err);
+                    return false;
+                }
+
+            });
+        } else {
+            return false;
+        }
     },
     async userExists(email) {
         return !!User.findOne({where: {email}});

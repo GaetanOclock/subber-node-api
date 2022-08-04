@@ -29,18 +29,38 @@ module.exports = {
 
         if (connectionMethod === 'google') {
             const userToken = req.body.token;
-            try {
-                res.send(await userService.makeGoogleAuth(userToken));
-            } catch(err) {
+            const authResult = await userService.makeGoogleAuth(userToken);
+
+            if (!authResult) {
                 res.status(401);
                 res.send({
                     message: err.message
                 });
+            } else {
+                res.send(authResult);
             }
+        } else {
+            res.send({
+                loggedIn: "dontknow"
+            });
         }
 
+    },
+    validateToken: (req, res) => {
+        if(userService.validateToken()) {
+            res.send({
+                message: "Token is valid."
+            });
+        } else {
+            res.status(401);
+            res.send({
+                message: "Token is invalid"
+            });
+        }
+    },
+    signOut: async (req, res) => {
         res.send({
-            loggedIn: "dontknow"
+            message: 'Nothing done for now !!!'
         });
     },
     listVideos: async (req, res) => {

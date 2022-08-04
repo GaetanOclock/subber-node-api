@@ -5,11 +5,19 @@ const updateOrCreate = async req => {
     let video = null;
     if (!req.params.id) {
         video = new Video();
+        video.name = "";
     } else {
         video = await Video.findByPk(req.params.id);
     }
 
-    video.name = req.body.name;
+    if (!video.original) {
+        const originalToUse = await Original.findByPk(req.body.originalId);
+        if (!originalToUse) {
+            throw new Error('Not found');
+        }
+        video.original_id = originalToUse.id;
+    }
+
     await video.save();
     return video;
 }
@@ -24,7 +32,8 @@ module.exports = {
         res.send(video);
     },
     create: async (req, res) => {
-        const video = await updateOrCreate(req);
+        const createdVideo = await updateOrCreate(req);
+        const video = await Video.findByPk(createdVideo.id, {include: Original});
         res.send(video);
     },
     update: async (req, res) => {
