@@ -18,6 +18,10 @@ Original.init(
         file: {
             type: DataTypes.TEXT,
             allowNull: false
+        },
+        thumb: {
+            type: DataTypes.TEXT,
+            allowNull: false
         }
     },
     {

@@ -27,8 +27,7 @@ const updateOrCreate = async req => {
         
     } else {
         video = await Video.findByPk(req.params.id);
-
-        // TODO : handle modification then save
+        video.name = req.body.name;
         await video.save();
     }
 
