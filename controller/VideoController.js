@@ -1,24 +1,37 @@
 const Video = require('../model/Video');
 const Original = require('../model/Original');
+const Slot = require('../model/Slot');
+const Sub = require('../model/Sub');
 
 const updateOrCreate = async req => {
     let video = null;
     if (!req.params.id) {
         video = new Video();
         video.name = "";
-    } else {
-        video = await Video.findByPk(req.params.id);
-    }
 
-    if (!video.original) {
-        const originalToUse = await Original.findByPk(req.body.originalId);
+        const originalToUse = await Original.findByPk(req.body.originalId, {include: Slot});
+        console.log(originalToUse);
         if (!originalToUse) {
             throw new Error('Not found');
         }
         video.original_id = originalToUse.id;
+        await video.save();
+        originalToUse.Slots.forEach(async slot => {
+            const newSub = new Sub();
+            newSub.video_id = video.id;
+            newSub.user_id = 1;
+            newSub.slot_id = slot.id;
+            await newSub.save();
+        });
+        
+        
+    } else {
+        video = await Video.findByPk(req.params.id);
+
+        // TODO : handle modification then save
+        await video.save();
     }
 
-    await video.save();
     return video;
 }
 
@@ -28,8 +41,9 @@ module.exports = {
         res.send(allVideos);
     },
     show: async (req, res) => {
-        const video = await Video.findByPk(req.params.id, {include: Original});
-        res.send(video);
+        const video = await Video.findByPk(req.params.id, {include: Sub});
+        const original = await Original.findByPk(video.original_id, {include: Slot});
+        res.send({video, original});
     },
     create: async (req, res) => {
         const createdVideo = await updateOrCreate(req);
