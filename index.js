@@ -21,6 +21,12 @@ app.use((req, res) => {
     });
 });
 
+app.use((err, req, res, next) => {
+    res.status(500);
+    console.log(err);
+    res.send('Server Error');
+});
+
 app.listen(3000, () => {
     console.log('serveur démarré sur http://localhost:3000');
 });

@@ -35,7 +35,7 @@ const userService = {
         const user = new User();
         user.email = userData.email;
         user.displayName = userData.given_name;
-        user.password = bcrypt.hash(userData.sub, bcrypt.genSaltSync(10));
+        user.password = await bcrypt.hash(userData.sub, bcrypt.genSaltSync(10));
         await user.save();
 
         if(authAfterCreated) {
